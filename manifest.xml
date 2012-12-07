@@ -1,0 +1,15 @@
+<package>
+  <description brief="christa_imu_driver">
+
+     christa_imu_driver
+
+  </description>
+  <author>mower</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/christa_imu_driver</url>
+  <depend package="rospy"/>
+
+</package>
+
+
