@@ -98,10 +98,13 @@ class ChristaParser:
         timeSincePPS, PPSCount, Sequence  = hs_serial
         rospy.loginfo(hs_serial)
 
+        # conversions from the christa datasheet:
+        #    http://www.cloudcaptech.com/Download/Sensors/Crista%20IMU/Docs/Crista%20IMU%20Comms%20Spec.pdf
+
         # Populate the Angular Velocity
-        imuMsg.angular_velocity.x = gyroX * 600 / 65536
-        imuMsg.angular_velocity.y = gyroY * 600 / 65536
-        imuMsg.angular_velocity.z = gyroZ * 600 / 65536
+        imuMsg.angular_velocity.x = gyroX * ( 2 * 300 / 65536)
+        imuMsg.angular_velocity.y = gyroY * ( 2 * 300 / 65536)
+        imuMsg.angular_velocity.z = gyroZ * ( 2 * 300 / 65536)
         #TODO: Populate the covariance
 
         # Populate the Linear Acceleration
@@ -110,7 +113,7 @@ class ChristaParser:
         imuMsg.linear_acceleration.z = accelZ * ( 19.61 * 10 / 65536)
         #TODO: Populate the covariance
 
-        #TODO: Populate the orientation (if we can use a magnetometer?? We might not get orientation data
+        #TODO: Populate the orientation (But christa IMU doesnt have a magnetometer :( )
 
         return True
 
