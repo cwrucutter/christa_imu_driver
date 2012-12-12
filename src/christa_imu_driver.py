@@ -102,9 +102,9 @@ class ChristaParser:
         #    http://www.cloudcaptech.com/Download/Sensors/Crista%20IMU/Docs/Crista%20IMU%20Comms%20Spec.pdf
 
         # Populate the Angular Velocity
-        imuMsg.angular_velocity.x = gyroX #* ( 2 * 300 / 65536) * (math.pi / 180)
-        imuMsg.angular_velocity.y = gyroY #* ( 2 * 300 / 65536) * (math.pi / 180)
-        imuMsg.angular_velocity.z = gyroZ #* ( 2 * 300 / 65536) * (math.pi / 180)
+        imuMsg.angular_velocity.x = gyroX * ( 2.0 * 300 / 65536) * (math.pi / 180)
+        imuMsg.angular_velocity.y = gyroY * ( 2.0 * 300 / 65536) * (math.pi / 180)
+        imuMsg.angular_velocity.z = gyroZ * ( 2.0 * 300 / 65536) * (math.pi / 180)
         #TODO: Populate the covariance
 
         # Populate the Linear Acceleration
