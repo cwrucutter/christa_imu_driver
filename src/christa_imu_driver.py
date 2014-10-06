@@ -32,8 +32,6 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import roslib
-roslib.load_manifest('christa_imu_driver')
 import rospy
 from sensor_msgs.msg import Imu
 
@@ -121,7 +119,7 @@ class ChristaParser:
 if __name__ == "__main__":
     #ROS init
     rospy.init_node('christa_imu_driver')
-    imuPub = rospy.Publisher('imu/data',Imu)
+    imuPub = rospy.Publisher('imu/data',Imu,queue_size=1)
     #Init Imu port
     imuPort = rospy.get_param('~port','/dev/ttyUSB0')
     imuRate = rospy.get_param('~baud',115200)
