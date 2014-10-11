@@ -63,7 +63,7 @@ def CRC16(data):
 
 class ChristaParser:
     """
-        Parses a binary Christa IMU Message
+        Parses a binary Christa imuSerial Message
     """
     def __init__(self):
         """ Initialize the NovatelParser """
@@ -127,19 +127,21 @@ if __name__ == "__main__":
 #if frame_id[0] != "/":
 #frame_id = addTFPrefix(frame_id)
 
-    imuData = Imu()
-    imuData.header.frame_id = "base_imu"
+    imuMsg = Imu()
+    imuMsg.header.frame_id = "base_imu"
 
     parser = ChristaParser()
     
     try:
-        IMU = serial.Serial(port=imuPort,baudrate=imuRate,timeout=.01)
+        #Create a Serial object. We will use the funcitons .read() and .close()
+        imuSerial = serial.Serial(port=imuPort,baudrate=imuRate,timeout=.01)
         #Read in GPS data
         sync0 = '\x00'; sync1 = '\x00';# sync2 = '\x00';
         while not rospy.is_shutdown():
             # READ UNTIL SYNC
-            data  = IMU.read(1)
-            sync1 = sync0; sync0 = data;
+            data  = imuSerial.read(1)
+            sync1 = sync0;
+            sync0 = data;
             sync  = sync1+sync0;
             match = '\x55\xAA'
             if sync != match:
@@ -148,19 +150,21 @@ if __name__ == "__main__":
                 rospy.loginfo("Beginning new message")
 
             # READ HEADER
-            header = IMU.read(2)
+            # parser.hdr_msgID and parser.hdr_msgLen get set during the 
+            # parser.ParseHeader function call.
+            header = imuSerial.read(2)
             if (not parser.ParseHeader(header)):
                 rospy.logwarn("Packet Failed: Header could not be parsed")
                 continue
             
             # READ MESSAGE
-            msg = IMU.read(parser.hdr_msgLen)
+            msg = imuSerial.read(parser.hdr_msgLen)
             if (len(msg) != parser.hdr_msgLen):
                 rospy.loginfo("Packet Failed: Message length unexpected")
                 continue
             
             # READ CRC
-            chk = IMU.read(2)
+            chk = imuSerial.read(2)
             if (not parser.VerifyChecksum(sync+header+msg,chk)):    
                 rospy.logwarn("Packet Failed: CRC Did not Match")
                 continue
@@ -169,13 +173,13 @@ if __name__ == "__main__":
             timeNow = rospy.get_rostime()
             if parser.hdr_msgID == parser.HS_SERIAL_IMU_MSG:
                 #HS_SERIAL_IMU_MSG message
-                imuData.header.stamp = timeNow
-                parser.ParseHsSerialImu(msg,imuData)
+                imuMsg.header.stamp = timeNow
+                parser.ParseHsSerialImu(msg,imuMsg)
             
-                # Publish imuData
-                imuPub.publish(imuData)
+                # Publish imuMsg
+                imuPub.publish(imuMsg)
             else:
                 rospy.logwarn("Christa message ID not recognized. Supported messages: HS_SERIAL_IMU_MSG")
             
     except rospy.ROSInterruptException:
-        IMU.close() #Close GPS serial port
+        imuSerial.close() #Close GPS serial port
